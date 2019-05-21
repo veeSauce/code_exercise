@@ -1,7 +1,10 @@
 This is a Simple GoLang REST Application that gives back a random name and a joke with that name in it
 
-API source for name: http://uinames.com/api/
-API source for joke: http://api.icndb.com/jokes/random?firstName=John&lastName=Doe&limitTo=[nerdy]
+API source for name: 
+http://uinames.com/api/
+
+API source for joke: 
+http://api.icndb.com/jokes/random?firstName=John&lastName=Doe&limitTo=[nerdy]
 
 The service once running has 2 endpoints, both can be reached with a GET request:
 
