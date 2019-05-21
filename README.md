@@ -3,13 +3,20 @@ This is a Simple GoLang REST Application that gives back a random name and a jok
 API source for name: http://uinames.com/api/
 API source for joke: http://api.icndb.com/jokes/random?firstName=John&lastName=Doe&limitTo=[nerdy]
 
+The service once running has 2 endpoints, both can be reached with a GET request:
+
+1- "/" This endpoint gives back the joke with a random name in it
+2- "/health" This is for setting up healthcheck on the app (more discussed further)
+
+The vendor directory has all the external dependency library and the folder is necessary strictly to deploy instances of Google Cloud Platform APP engine
+
 If you are trying to run the app locally, follow these instructions:
 
 1- Install GO 
 2- Setup Goroot and Gopath correctly
 3- clone the binary: <github link here>
 4: cd into src directory and run go build main.go
-5: run ./main - app will run on 
+5: run command ./main - app will run on the URL below
 
 http://localhost:5000
 
@@ -17,50 +24,41 @@ You can curl it, postman it or just refresh your browser on http://localhost:500
 
 
 
-Deploying to GCP Involves steps from GUI and/or CLI:
+Deploying to GCP (Exposing your web server to the internet) involves the following steps:
 
-Login to Google Cloud website and Create a test project  (call it test-project + make sure to enable billing !)
+1- Create a test [project](https://cloud.google.com/resource-manager/docs/creating-managing-projects)(call it test-project + make sure to enable billing !)
 
-https://cloud.google.com/resource-manager/docs/creating-managing-projects
 
-Install gcloud command line tool (alternative option is to do everything in the GUI)
 
-For your new Test-Project we need a token to talk to it, so for that we create a Service Account with owner access
+2- Install [gcloud] (https://cloud.google.com/sdk/docs/quickstart-macos) command line tool (alternative option is to do everything in the GUI)
 
-gcloud beta iam service-accounts create joke-web-app-account
+3- For your new Test-Project setup a Service Account by running the following commands
+
+    1) gcloud beta iam service-accounts create joke-web-app-account
     --description "this account helps create resources for deploying the joke web application"
     --display-name "joke-web-app"
 
-gcloud projects add-iam-policy-binding my-project-123 \
-  --member serviceAccount:joke-web-app-account@test-project.iam.gserviceaccount.com \
-  --role roles/owner
+    2) gcloud projects add-iam-policy-binding my-project-123 \
+    --member serviceAccount:joke-web-app-account@test-project.iam.gserviceaccount.com \
+    --role roles/owner
   
-gcloud iam service-accounts keys create ~/key.json
-  --iam-account joke-web-app-account@test-project.iam.gserviceaccount.com
+    3) gcloud iam service-accounts keys create ~/key.json
+    --iam-account joke-web-app-account@test-project.iam.gserviceaccount.com
 
-gcloud auth activate-service-account --project=someproject --key-file=gcpcmdlineuser.json in your local terminal
+    4) gcloud auth activate-service-account --project=test-project --key-file=gcpcmdlineuser.json
 
-Now we can create a VM with a Linux image provided, run the fist command below then fill the appropriate values
 
-gcloud compute images list
+For our purpose we can choose the App Engine Resource from Google Cloud Platform (Automatic scaling)
 
-gcloud compute instances create [INSTANCE_NAME] \
---image-family [IMAGE_FAMILY] \
---image-project [IMAGE_PROJECT]
+4- open main.go and change the listen&serve port from 5000 to 8080
 
-SSH into the instance either through the console GUI or gcloud CLI on your local (fill out zone and instance name)
+The above step lets us skip the port forwarding and firewall creation steps. (If you want to deploy and run on a custom port other than 8080, in the app.yaml you need to create port forwarding and firewall rules)
 
-gcloud compute ssh --project test-project --zone [ZONE] [INSTANCE_NAME]
+5- run the commamd gcloud app deploy
 
-Install GO just the way you have had to install it in your local machine (double check it is installed run go env)
+Your terminal will show you the URL for your deployed application
 
-Copy the source code (main.go) from your local to the cloud instance (fill out file path and instance name as corresponding to what you created)
+***If you redeploy (gcloud app deploy), it will override the previous deployment with new version
 
-gcloud compute scp [LOCAL_FILE_PATH] [INSTANCE_NAME]:~
-
-run go install and run ./$GOPATH/bin/main where gopath is however you configured it
-
-**For a full scaled app you need the following resources:
-
--Forwarding Rule, Target Proxy, URL Map, Backend Service, HealthCheck, Backend + Instance (all the above got the instance ready)
+To see the application running click [here] (https://kuber-test-239218.appspot.com) ! < My deployment :)
 
