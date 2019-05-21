@@ -17,7 +17,7 @@ You can curl it, postman it or just refresh your browser on http://localhost:500
 
 
 
-Deploying to GCP Involves steps from GUI and CLI:
+Deploying to GCP Involves steps from GUI and/or CLI:
 
 Login to Google Cloud website and Create a test project  (call it test-project + make sure to enable billing !)
 
